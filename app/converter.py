@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 
-from app.rates import Rates, UnknownCurrencyError
+from app.rates import Rates
 
 
 class ConversionError(Exception):
