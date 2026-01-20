@@ -39,3 +39,12 @@ def test_list_limit_none_branch() -> None:
     log = OperationLog()
     log.add("USD", "RUB", 10, 1.0, 10)
     assert len(log.list(limit=None)) == 1
+
+
+def test_list_covers_offset_negative_and_limit_none() -> None:
+    log = OperationLog()
+    log.add("USD", "RUB", 1, 1.0, 1.0)
+
+    # offset < 0 branch + limit is None branch
+    items = log.list(limit=None, offset=-1)
+    assert len(items) == 1
