@@ -48,3 +48,10 @@ def test_list_covers_offset_negative_and_limit_none() -> None:
     # offset < 0 branch + limit is None branch
     items = log.list(limit=None, offset=-1)
     assert len(items) == 1
+
+
+def test_operation_log_class_is_executed() -> None:
+    from app.operations import OperationLog  # локальный импорт для coverage
+
+    log = OperationLog()
+    assert log.count() == 0
