@@ -1,15 +1,32 @@
-# Currency Converter (case 2)
+# Currency Converter (Case 2)
 
-Core logic implemented without frameworks.
+HTTP currency converter. Rates are loaded from a CSV file.
 
-## Rates format
+## Project structure
+- `app/` core logic (rates, converter, operations)
+- `tests/` unit tests
+- `data/rates.csv` rates file
+
+## Rates file format
 CSV: `data/rates.csv`
 
 Header: `currency,rate_to_rub`
-Example:
-- USD,92.50
-- EUR,100.20
 
+Example:
+```csv
+currency,rate_to_rub
+RUB,1
+USD,92.50
+EUR,100.20
+
+```
 ## Run demo
-```bash
-python main.py
+`python main.py`
+
+## run tests + coverage
+```
+pip install pytest coverage
+pytest
+coverage run -m pytest
+coverage report
+```
