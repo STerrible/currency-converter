@@ -4,6 +4,8 @@ import pytest
 
 from app.rates import CsvRatesLoader, InvalidRatesFileError, UnknownCurrencyError
 
+from app.rates import Rates, UnknownCurrencyError
+
 
 def _write(tmp_path: Path, name: str, content: str) -> Path:
     p = tmp_path / name
@@ -82,3 +84,9 @@ def test_unknown_currency_raises(tmp_path: Path) -> None:
 
     with pytest.raises(UnknownCurrencyError):
         rates.get_rate_to_rub("")
+
+
+def test_normalize_non_string_raises() -> None:
+    rates = Rates(rate_to_rub={"RUB": 1.0})
+    with pytest.raises(UnknownCurrencyError):
+        rates.normalize(123)  # type: ignore[arg-type]

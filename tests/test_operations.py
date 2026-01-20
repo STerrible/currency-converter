@@ -33,3 +33,9 @@ def test_list_offset_limit() -> None:
     # negative cases
     assert len(log.list(limit=-1)) == 0
     assert len(log.list(offset=-100)) == 5
+
+
+def test_list_limit_none_branch() -> None:
+    log = OperationLog()
+    log.add("USD", "RUB", 10, 1.0, 10)
+    assert len(log.list(limit=None)) == 1
