@@ -55,3 +55,14 @@ def test_operation_log_class_is_executed() -> None:
 
     log = OperationLog()
     assert log.count() == 0
+
+
+def test_operation_to_dict_is_covered() -> None:
+    log = OperationLog()
+    op = log.add("USD", "RUB", 10, 92.5, 925)
+
+    d = op.to_dict()
+    assert d["from_currency"] == "USD"
+    assert d["to_currency"] == "RUB"
+    assert d["amount"] == 10.0
+
