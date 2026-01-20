@@ -2,7 +2,7 @@ from pathlib import Path
 
 import pytest
 
-from app.rates import CsvRatesLoader, InvalidRatesFileError, UnknownCurrencyError
+from app.rates import CsvRatesLoader, InvalidRatesFileError
 
 from app.rates import Rates, UnknownCurrencyError
 
