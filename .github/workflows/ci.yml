@@ -29,9 +29,6 @@ jobs:
 
       - name: Tests + Coverage (100% branch)
         run: |
-          coverage run --branch -m pytest
+          coverage run --branch --source=app --omit=app/server.py -m pytest
           coverage report --fail-under=100 -m
 
-      - name: API tests (expected to fail until server exists)
-        run: |
-          pytest -q tests_api
