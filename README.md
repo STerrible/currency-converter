@@ -33,14 +33,22 @@ coverage report
 
 ## API (draft)
 
-Base URL: `http://localhost:8008`
+Base URL: `http://localhost:8008`  
+All requests/responses use JSON. Request header for body: `Content-Type: application/json`.
 
 | Название действия | Локейшн (URL) | Тип запроса | Описание запроса и ответа |
 |---|---|---|---|
-| Проверка доступности сервиса | `/health` | GET | Возвращает статус сервиса. **Ответ 200**: `{"status":"ok"}` |
-| Конвертация валюты | `/convert` | POST | Принимает JSON: `{"from":"USD","to":"RUB","amount":10}`. Возвращает результат конвертации и записывает операцию в историю. **Ответ 200**: `{"from":"USD","to":"RUB","amount":10,"rate":92.5,"result":925.0,"operation":{...}}`. Ошибки: **400** (невалидный JSON/нет полей/amount <= 0), **404** (валюта не найдена) |
-| Получить историю операций | `/operations` | GET | Возвращает список операций. Query params (опц.): `limit` (int), `offset` (int). **Ответ 200**: `{"count": N, "items":[{...},{...}]}` |
-| Получить операцию по id | `/operations/{id}` | GET | Возвращает одну операцию по `id`. **Ответ 200**: `{...}`. Ошибка: **404** если операция не найдена |
+| Проверка доступности | `/health` | GET | **200**: `{"status":"ok"}` |
+| Создать операцию конвертации | `/operations` | POST | **Запрос**: `{"from":"USD","to":"RUB","amount":10}`. Сервер выполняет конвертацию по курсам из CSV и сохраняет операцию. **200**: `{"operation":{...},"rate":92.5,"result":925.0}`. **400**: невалидный JSON/нет полей/amount<=0. **404**: неизвестная валюта |
+| Получить историю операций | `/operations` | GET | Query params (опц.): `limit` (int), `offset` (int). **200**: `{"count":N,"items":[{...}]}`. **400**: некорректные query-параметры |
+| Получить операцию по id | `/operations/{id}` | GET | **200**: `{...}`. **404**: операция не найдена |
+| Очистить историю операций | `/operations` | DELETE | Удаляет все операции из истории. **200**: `{"deleted":N}` (сколько удалено). |
+
+### Query params for GET /operations
+- `limit` (optional): max number of items to return. If omitted → return all.
+- `offset` (optional): start position from 0. If omitted → 0.
+- If `limit < 0` → return empty list.
+- If `offset < 0` → treated as 0.
 
 ### Operation object
 ```json
@@ -53,4 +61,4 @@ Base URL: `http://localhost:8008`
   "rate": 78.65,
   "result": 786.5
 }
-```
+
