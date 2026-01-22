@@ -2,7 +2,7 @@ name: CI
 
 on:
   push:
-    branches: [ "main", "server", "apispec" ]
+    branches: [ "main", "server", "apispec", "ui" ]
   pull_request:
 
 jobs:
