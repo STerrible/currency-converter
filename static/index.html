@@ -1,0 +1,182 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Currency Converter</title>
+  <style>
+    body { font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial; max-width: 900px; margin: 24px auto; padding: 0 12px; }
+    .row { display:flex; gap:12px; flex-wrap:wrap; align-items:end; }
+    label { display:block; font-size: 14px; opacity: .8; margin-bottom: 6px; }
+    select,input,button { padding:10px; font-size:16px; }
+    input { width: 180px; }
+    button { cursor:pointer; }
+    .card { border:1px solid #ddd; border-radius:12px; padding:16px; margin-top:16px; }
+    table { width:100%; border-collapse:collapse; }
+    th,td { text-align:left; padding:8px; border-bottom:1px solid #eee; font-size:14px; }
+    .muted { opacity:.7; font-size: 13px; }
+    .error { color: #b00020; }
+  </style>
+</head>
+<body>
+  <h1>Конвертер валют</h1>
+  <p class="muted">Работает через ваш REST API. Курсы берутся из CSV на сервере.</p>
+
+  <div class="card">
+    <h2>Конвертация</h2>
+    <div class="row">
+      <div>
+        <label for="from">Из</label>
+        <select id="from"></select>
+      </div>
+      <div>
+        <label for="to">В</label>
+        <select id="to"></select>
+      </div>
+      <div>
+        <label for="amount">Сумма</label>
+        <input id="amount" type="number" min="0" step="0.01" value="10" />
+      </div>
+      <button id="convertBtn">Конвертировать</button>
+      <button id="swapBtn" title="Поменять местами">⇄</button>
+    </div>
+
+    <p id="result" style="font-size:18px; margin-top:12px;"></p>
+    <p id="err" class="error"></p>
+  </div>
+
+  <div class="card">
+    <div class="row" style="justify-content:space-between;">
+      <h2 style="margin:0;">История операций</h2>
+      <div>
+        <button id="refreshBtn">Обновить</button>
+        <button id="clearBtn">Очистить</button>
+      </div>
+    </div>
+
+    <table>
+      <thead>
+        <tr>
+          <th>Время</th>
+          <th>Из</th>
+          <th>В</th>
+          <th>Сумма</th>
+          <th>Курс</th>
+          <th>Результат</th>
+        </tr>
+      </thead>
+      <tbody id="ops"></tbody>
+    </table>
+  </div>
+
+<script>
+  const $ = (id) => document.getElementById(id);
+  const BASE = ""; // same origin
+
+  function fmtTime(iso) {
+  const d = new Date(iso);
+  return d.toLocaleString("ru-RU", {
+    dateStyle: "short",
+    timeStyle: "medium",
+  });
+}
+
+  function fmt(n) {
+    if (typeof n !== "number") return n;
+    return Number.isInteger(n) ? n.toString() : n.toFixed(2);
+  }
+
+  async function api(path, options) {
+    const r = await fetch(BASE + path, options);
+    let data = null;
+    try { data = await r.json(); } catch {}
+    if (!r.ok) {
+      const msg = data?.message || `HTTP ${r.status}`;
+      throw new Error(msg);
+    }
+    return data;
+  }
+
+  async function loadRates() {
+    const data = await api("/rates");
+    const currencies = data.items.map(x => x.currency);
+
+    const from = $("from");
+    const to = $("to");
+    from.innerHTML = "";
+    to.innerHTML = "";
+
+    for (const c of currencies) {
+      from.add(new Option(c, c));
+      to.add(new Option(c, c));
+    }
+
+    // дефолты
+    from.value = currencies.includes("USD") ? "USD" : currencies[0];
+    to.value = currencies.includes("RUB") ? "RUB" : currencies[currencies.length - 1];
+  }
+
+  async function refreshOps() {
+    const data = await api("/operations");
+    const tbody = $("ops");
+    tbody.innerHTML = "";
+
+    for (const op of data.items) {
+      const tr = document.createElement("tr");
+      tr.innerHTML = `
+        <td>${fmtTime(op.ts)}</td>
+        <td>${op.from}</td>
+        <td>${op.to}</td>
+        <td>${fmt(op.amount)}</td>
+        <td>${fmt(op.rate)}</td>
+        <td><b>${fmt(op.result)}</b></td>
+      `;
+      tbody.appendChild(tr);
+    }
+  }
+
+  async function convert() {
+    $("err").textContent = "";
+    $("result").textContent = "";
+
+    const payload = {
+      from: $("from").value,
+      to: $("to").value,
+      amount: Number($("amount").value)
+    };
+
+    const data = await api("/operations", {
+      method: "POST",
+      headers: {"Content-Type":"application/json"},
+      body: JSON.stringify(payload)
+    });
+
+    $("result").textContent = `${payload.amount} ${payload.from} = ${fmt(data.result)} ${payload.to} (курс: ${fmt(data.rate)})`;
+    await refreshOps();
+  }
+
+  async function clearOps() {
+    await api("/operations", { method: "DELETE" });
+    await refreshOps();
+  }
+
+  $("convertBtn").addEventListener("click", () => convert().catch(e => $("err").textContent = e.message));
+  $("refreshBtn").addEventListener("click", () => refreshOps().catch(e => $("err").textContent = e.message));
+  $("clearBtn").addEventListener("click", () => clearOps().catch(e => $("err").textContent = e.message));
+  $("swapBtn").addEventListener("click", () => {
+    const a = $("from").value;
+    $("from").value = $("to").value;
+    $("to").value = a;
+  });
+
+  (async () => {
+    try {
+      await loadRates();
+      await refreshOps();
+    } catch (e) {
+      $("err").textContent = e.message;
+    }
+  })();
+</script>
+</body>
+</html>

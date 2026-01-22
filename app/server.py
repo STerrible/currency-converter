@@ -8,10 +8,22 @@ from app.converter import CurrencyConverter, InvalidAmountError
 from app.operations import OperationLog
 from app.rates import CsvRatesLoader, InvalidRatesFileError, UnknownCurrencyError
 
+from pathlib import Path
+
+BASE_DIR = Path(__file__).resolve().parent.parent
+STATIC_DIR = BASE_DIR / "static"
+
+
+def _add_cors_headers(handler: BaseHTTPRequestHandler) -> None:
+    handler.send_header("Access-Control-Allow-Origin", "*")
+    handler.send_header("Access-Control-Allow-Methods", "GET, POST, DELETE, OPTIONS")
+    handler.send_header("Access-Control-Allow-Headers", "Content-Type")
+
 
 def _json_response(handler: BaseHTTPRequestHandler, status: int, payload: object) -> None:
     data = json.dumps(payload, ensure_ascii=False).encode("utf-8")
     handler.send_response(status)
+    _add_cors_headers(handler)
     handler.send_header("Content-Type", "application/json; charset=utf-8")
     handler.send_header("Content-Length", str(len(data)))
     handler.end_headers()
@@ -55,12 +67,66 @@ class Handler(BaseHTTPRequestHandler):
     def log_message(self, format: str, *args) -> None:  # noqa: A002
         return
 
+    def do_OPTIONS(self) -> None:  # noqa: N802
+        self.send_response(204)
+        _add_cors_headers(self)
+        self.end_headers()
+
     def do_GET(self) -> None:  # noqa: N802
         parsed = urlparse(self.path)
         path = parsed.path
 
+        def _op_to_api(op) -> dict:
+            d = op.to_dict()
+            d["from"] = d.pop("from_currency")
+            d["to"] = d.pop("to_currency")
+            return d
+
+        def _file_response(handler: BaseHTTPRequestHandler, path: Path, content_type: str) -> None:
+            if not path.exists() or not path.is_file():
+                _error(handler, 404, "not_found", "file not found")
+                return
+            data = path.read_bytes()
+            handler.send_response(200)
+            _add_cors_headers(handler)
+            handler.send_header("Content-Type", content_type)
+            handler.send_header("Content-Length", str(len(data)))
+            handler.end_headers()
+            handler.wfile.write(data)
+            handler.send_header("Content-Type", content_type)
+            handler.send_header("Content-Length", str(len(data)))
+            handler.end_headers()
+            handler.wfile.write(data)
+
+        if path == "/":
+            _file_response(self, STATIC_DIR / "index.html", "text/html; charset=utf-8")
+            return
+
+        if path.startswith("/static/"):
+            rel = path.removeprefix("/static/").strip("/")
+            file_path = STATIC_DIR / rel
+            # минимально: отдаём только html/css/js
+            if file_path.suffix == ".html":
+                _file_response(self, file_path, "text/html; charset=utf-8")
+                return
+            if file_path.suffix == ".css":
+                _file_response(self, file_path, "text/css; charset=utf-8")
+                return
+            if file_path.suffix == ".js":
+                _file_response(self, file_path, "application/javascript; charset=utf-8")
+                return
+            _error(self, 415, "unsupported_media_type", "unsupported static file type")
+            return
+
         if path == "/health":
             _json_response(self, 200, {"status": "ok"})
+            return
+
+        if path == "/rates":
+            rates = self.state.converter._rates  # noqa: SLF001
+            items = [{"currency": c, "rate_to_rub": r} for c, r in rates.rate_to_rub.items()]
+            items.sort(key=lambda x: x["currency"])
+            _json_response(self, 200, {"base": "RUB", "items": items})
             return
 
         if path == "/operations":
@@ -83,7 +149,7 @@ class Handler(BaseHTTPRequestHandler):
                     _error(self, 400, "bad_request", "offset must be integer")
                     return
 
-            items = [op.to_dict() for op in self.state.log.list(limit=limit, offset=offset)]
+            items = [_op_to_api(op) for op in self.state.log.list(limit=limit, offset=offset)]
             _json_response(self, 200, {"count": self.state.log.count(), "items": items})
             return
 
@@ -95,7 +161,7 @@ class Handler(BaseHTTPRequestHandler):
 
             for op in self.state.log.list():
                 if op.id == op_id:
-                    _json_response(self, 200, op.to_dict())
+                    _json_response(self, 200, _op_to_api(op))
                     return
 
             _error(self, 404, "not_found", "operation not found")
