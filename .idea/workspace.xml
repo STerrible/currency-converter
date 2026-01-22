@@ -4,7 +4,9 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="2567520d-f92c-44fb-bdf8-8bc6ace3333f" name="Changes" comment="corrected died tests" />
+    <list default="true" id="2567520d-f92c-44fb-bdf8-8bc6ace3333f" name="Changes" comment="updated endpoints">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -42,7 +44,7 @@
     &quot;Python.main.executor&quot;: &quot;Run&quot;,
     &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
     &quot;com.codeium.enabled&quot;: &quot;true&quot;,
-    &quot;git-widget-placeholder&quot;: &quot;main&quot;
+    &quot;git-widget-placeholder&quot;: &quot;apispec&quot;
   }
 }</component>
   <component name="SharedIndexes">
@@ -125,7 +127,31 @@
       <option name="project" value="LOCAL" />
       <updated>1768927008600</updated>
     </task>
-    <option name="localTasksCounter" value="9" />
+    <task id="LOCAL-00009" summary="corrected died tests">
+      <option name="closed" value="true" />
+      <created>1768927226690</created>
+      <option name="number" value="00009" />
+      <option name="presentableId" value="LOCAL-00009" />
+      <option name="project" value="LOCAL" />
+      <updated>1768927226690</updated>
+    </task>
+    <task id="LOCAL-00010" summary="corrected died tests">
+      <option name="closed" value="true" />
+      <created>1768927419346</created>
+      <option name="number" value="00010" />
+      <option name="presentableId" value="LOCAL-00010" />
+      <option name="project" value="LOCAL" />
+      <updated>1768927419346</updated>
+    </task>
+    <task id="LOCAL-00011" summary="updated endpoints">
+      <option name="closed" value="true" />
+      <created>1769054868388</created>
+      <option name="number" value="00011" />
+      <option name="presentableId" value="LOCAL-00011" />
+      <option name="project" value="LOCAL" />
+      <updated>1769054868388</updated>
+    </task>
+    <option name="localTasksCounter" value="12" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -144,6 +170,7 @@
     <MESSAGE value="готов ci.yml и доработан README" />
     <MESSAGE value="removed unused import" />
     <MESSAGE value="corrected died tests" />
-    <option name="LAST_COMMIT_MESSAGE" value="corrected died tests" />
+    <MESSAGE value="updated endpoints" />
+    <option name="LAST_COMMIT_MESSAGE" value="updated endpoints" />
   </component>
 </project>
