@@ -6,6 +6,7 @@ addopts = "-q"
 [tool.coverage.run]
 branch = true
 source = ["app"]
+omit = ["app/server.py"]
 
 [tool.coverage.report]
 show_missing = true

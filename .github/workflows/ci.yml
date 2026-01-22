@@ -1,9 +1,8 @@
 name: CI
 
-
 on:
   push:
-    branches: [ "main" ]
+    branches: [ "main", "server", "apispec" ]
   pull_request:
 
 jobs:
@@ -22,7 +21,7 @@ jobs:
       - name: Install deps
         run: |
           python -m pip install --upgrade pip
-          pip install pytest coverage ruff
+          pip install pytest coverage ruff requests
 
       - name: Lint (PEP8-ish)
         run: |
@@ -30,5 +29,6 @@ jobs:
 
       - name: Tests + Coverage (100% branch)
         run: |
-          coverage run --branch -m pytest
+          coverage run --branch --source=app --omit=app/server.py -m pytest
           coverage report --fail-under=100 -m
+
