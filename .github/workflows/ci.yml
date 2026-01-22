@@ -10,14 +10,6 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Setup Python
-        uses: actions/setup-python@v5
-        with:
-          python-version: "3.12"
-
       - name: Install deps
         run: |
           python -m pip install --upgrade pip
@@ -29,9 +21,37 @@ jobs:
 
       - name: Tests + Coverage (100% branch)
         run: |
-          coverage run --branch -m pytest
+          coverage run --branch --source=app --omit=app/server.py -m pytest
           coverage report --fail-under=100 -m
 
-      - name: API tests (expected to fail until server exists)
+      - name: Start server (background)
         run: |
+          python -m app.server &
+          echo $! > server.pid
+
+      - name: Wait for server
+        run: |
+          python - <<'PY'
+          import socket, time
+          host, port = "127.0.0.1", 8008
+          deadline = time.time() + 10
+          while time.time() < deadline:
+              try:
+                  with socket.create_connection((host, port), timeout=1):
+                      print("Server is up")
+                      raise SystemExit(0)
+              except OSError:
+                  time.sleep(0.2)
+          raise SystemExit("Server did not start in time")
+          PY
+
+      - name: API tests
+        run: |
+          pytest -q tests_api
+
+      - name: Stop server
+        if: always()
+        run: |
+          kill $(cat server.pid) || true
+          
           pytest -q tests_api
