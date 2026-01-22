@@ -4,9 +4,8 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="2567520d-f92c-44fb-bdf8-8bc6ace3333f" name="Changes" comment="corrected died tests">
+    <list default="true" id="2567520d-f92c-44fb-bdf8-8bc6ace3333f" name="Changes" comment="updated endpoints">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/README.md" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -37,17 +36,17 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "Python tests.Python tests in test_converter.py.executor": "Run",
-    "Python tests.Python tests in test_operations.py.executor": "Run",
-    "Python tests.Python tests in test_rates.py.executor": "Run",
-    "Python.main.executor": "Run",
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "com.codeium.enabled": "true",
-    "git-widget-placeholder": "apispec"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;Python tests.Python tests in test_converter.py.executor&quot;: &quot;Run&quot;,
+    &quot;Python tests.Python tests in test_operations.py.executor&quot;: &quot;Run&quot;,
+    &quot;Python tests.Python tests in test_rates.py.executor&quot;: &quot;Run&quot;,
+    &quot;Python.main.executor&quot;: &quot;Run&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;com.codeium.enabled&quot;: &quot;true&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;apispec&quot;
   }
-}]]></component>
+}</component>
   <component name="SharedIndexes">
     <attachedChunks>
       <set>
@@ -144,7 +143,15 @@
       <option name="project" value="LOCAL" />
       <updated>1768927419346</updated>
     </task>
-    <option name="localTasksCounter" value="11" />
+    <task id="LOCAL-00011" summary="updated endpoints">
+      <option name="closed" value="true" />
+      <created>1769054868388</created>
+      <option name="number" value="00011" />
+      <option name="presentableId" value="LOCAL-00011" />
+      <option name="project" value="LOCAL" />
+      <updated>1769054868388</updated>
+    </task>
+    <option name="localTasksCounter" value="12" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -163,6 +170,7 @@
     <MESSAGE value="готов ci.yml и доработан README" />
     <MESSAGE value="removed unused import" />
     <MESSAGE value="corrected died tests" />
-    <option name="LAST_COMMIT_MESSAGE" value="corrected died tests" />
+    <MESSAGE value="updated endpoints" />
+    <option name="LAST_COMMIT_MESSAGE" value="updated endpoints" />
   </component>
 </project>
